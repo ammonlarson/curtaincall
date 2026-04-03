@@ -1,0 +1,8 @@
+environment         = "prod"
+aws_region          = "us-east-1"
+db_instance_class   = "db.t4g.small"
+lambda_memory_size  = 1024
+lambda_timeout      = 60
+seed_admin_email    = "admin@curtaincall.app"
+seed_admin_password = "CHANGE_ME_IN_SECRETS_MANAGER"
+domain_name         = "curtaincall.app"

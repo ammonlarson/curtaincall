@@ -1,0 +1,23 @@
+{
+  "name": "curtaincall",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@curtaincall/api",
+    "dev:web": "npm run dev --workspace=@curtaincall/web",
+    "build:shared": "npm run build --workspace=@curtaincall/shared",
+    "build:api": "npm run build --workspace=@curtaincall/api",
+    "build:web": "npm run build --workspace=@curtaincall/web",
+    "build": "npm run build:shared && npm run build:api && npm run build:web",
+    "migrate": "npm run migrate --workspace=@curtaincall/api",
+    "seed": "npm run seed --workspace=@curtaincall/api"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,8 @@
+environment         = "staging"
+aws_region          = "us-east-1"
+db_instance_class   = "db.t4g.micro"
+lambda_memory_size  = 512
+lambda_timeout      = 30
+seed_admin_email    = "admin@curtaincall.app"
+seed_admin_password = "changeme123"
+domain_name         = "staging.curtaincall.app"
