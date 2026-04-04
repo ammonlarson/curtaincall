@@ -112,7 +112,7 @@ struct WantToSeeView: View {
     @ViewBuilder
     private func showThumbnail(_ userShow: UserShow) -> some View {
         if let show = catalogVM.shows.first(where: { $0.id == userShow.showId }),
-           let urlString = show.imageURL,
+           let urlString = show.imageUrl,
            let url = URL(string: urlString) {
             AsyncImage(url: url) { phase in
                 switch phase {

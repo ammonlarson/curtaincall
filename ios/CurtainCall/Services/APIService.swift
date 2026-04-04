@@ -22,6 +22,12 @@ enum APIError: LocalizedError {
     }
 }
 
+// MARK: - Response Wrappers
+
+private struct DataResponse<T: Decodable>: Decodable {
+    let data: T
+}
+
 // MARK: - API Service
 
 @MainActor
@@ -72,6 +78,7 @@ final class APIService: ObservableObject {
         return url
     }
 
+    /// Performs a request and unwraps the `{ "data": T }` envelope returned by the API.
     private func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
         let data: Data
         let response: URLResponse
@@ -91,7 +98,8 @@ final class APIService: ObservableObject {
         }
 
         do {
-            return try decoder.decode(T.self, from: data)
+            let wrapper = try decoder.decode(DataResponse<T>.self, from: data)
+            return wrapper.data
         } catch {
             throw APIError.decodingFailed(error)
         }

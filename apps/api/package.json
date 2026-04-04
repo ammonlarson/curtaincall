@@ -7,21 +7,23 @@
     "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --format=esm --external:pg-native",
     "start": "node dist/index.js",
     "migrate": "tsx src/db/migrate.ts",
-    "seed": "tsx src/db/seed.ts"
+    "seed": "tsx src/db/seed.ts",
+    "test": "vitest run"
   },
   "dependencies": {
-    "kysely": "^0.28.11",
-    "pg": "^8.19.0",
-    "@aws-sdk/client-secrets-manager": "^3.700.0",
     "@aws-sdk/client-s3": "^3.700.0",
+    "@aws-sdk/client-secrets-manager": "^3.700.0",
     "@aws-sdk/s3-request-presigner": "^3.700.0",
-    "@curtaincall/shared": "*"
+    "@curtaincall/shared": "*",
+    "kysely": "^0.28.11",
+    "pg": "^8.19.0"
   },
   "devDependencies": {
-    "typescript": "^5.6.0",
-    "tsx": "^4.19.0",
-    "esbuild": "^0.24.0",
     "@types/node": "^22.0.0",
-    "@types/pg": "^8.11.0"
+    "@types/pg": "^8.11.0",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.2"
   }
 }

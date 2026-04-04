@@ -18,7 +18,7 @@ struct ShowCardView: View {
             // Show info
             VStack(alignment: .leading, spacing: 4) {
                 // Category badge
-                Text(show.category.rawValue.uppercased())
+                Text(show.category.displayName.uppercased())
                     .font(.caption2)
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
@@ -78,7 +78,7 @@ struct ShowCardView: View {
 
     @ViewBuilder
     private var posterImage: some View {
-        if let urlString = show.imageURL, let url = URL(string: urlString) {
+        if let urlString = show.imageUrl, let url = URL(string: urlString) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
@@ -134,7 +134,7 @@ struct ShowCardView: View {
             openingDate: "2015-08-06",
             closingDate: nil,
             theater: "Richard Rodgers Theatre",
-            imageURL: nil,
+            imageUrl: nil,
             composer: "Lin-Manuel Miranda",
             lyricist: "Lin-Manuel Miranda",
             bookWriter: "Lin-Manuel Miranda",

@@ -31,8 +31,8 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     });
   });
 
-  // GET /public/shows - Paginated list with search, filter, sort
-  router.get('public/shows', async (ctx) => {
+  // Show route handlers shared by /public and /v1 prefixes
+  const handleListShows: import('../router.js').RouteHandler = async (ctx) => {
     const page = Math.max(1, parseInt(ctx.query['page'] ?? '1', 10) || 1);
     const perPage = Math.min(
       MAX_PAGE_SIZE,
@@ -100,10 +100,9 @@ export function createPublicRouter(db: Kysely<Database>): Router {
       per_page: perPage,
       total_pages: Math.ceil(total / perPage),
     });
-  });
+  };
 
-  // GET /public/shows/search - Search shows by title
-  router.get('public/shows/search', async (ctx) => {
+  const handleSearchShows: import('../router.js').RouteHandler = async (ctx) => {
     const q = ctx.query['q']?.trim();
 
     if (!q || q.length === 0) {
@@ -119,10 +118,9 @@ export function createPublicRouter(db: Kysely<Database>): Router {
       .execute();
 
     return Response.json({ data: shows });
-  });
+  };
 
-  // GET /public/shows/:id - Single show detail
-  router.get('public/shows/:id', async (ctx) => {
+  const handleGetShow: import('../router.js').RouteHandler = async (ctx) => {
     const { id } = ctx.params;
 
     const show = await db
@@ -139,7 +137,17 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     }
 
     return Response.json({ data: show });
-  });
+  };
+
+  // Register show routes under /public prefix (existing)
+  router.get('public/shows', handleListShows);
+  router.get('public/shows/search', handleSearchShows);
+  router.get('public/shows/:id', handleGetShow);
+
+  // Register show routes under /v1 prefix (versioned)
+  router.get('v1/shows', handleListShows);
+  router.get('v1/shows/search', handleSearchShows);
+  router.get('v1/shows/:id', handleGetShow);
 
   return router;
 }

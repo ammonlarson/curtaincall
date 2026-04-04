@@ -50,7 +50,7 @@ struct FilterChipRow: View {
 
                 ForEach(categories, id: \.rawValue) { category in
                     FilterChipView(
-                        title: category.rawValue,
+                        title: category.displayName,
                         isSelected: selectedCategory == category
                     ) {
                         withAnimation(.easeInOut(duration: 0.2)) {
