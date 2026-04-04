@@ -121,15 +121,15 @@ final class UserDataViewModel: ObservableObject {
                     .localizedCaseInsensitiveCompare($1.displayTitle(from: catalog)) == .orderedDescending
             }
         case .newestFirst:
-            return shows.sorted {
-                let d0 = catalog.first(where: { $0.id == $0.id })?.openingDate ?? ""
-                let d1 = catalog.first(where: { $0.id == $1.showId })?.openingDate ?? ""
+            return shows.sorted { lhs, rhs in
+                let d0 = catalog.first(where: { $0.id == lhs.showId })?.openingDate ?? ""
+                let d1 = catalog.first(where: { $0.id == rhs.showId })?.openingDate ?? ""
                 return d0 > d1
             }
         case .oldestFirst:
-            return shows.sorted {
-                let d0 = catalog.first(where: { $0.id == $0.id })?.openingDate ?? ""
-                let d1 = catalog.first(where: { $0.id == $1.showId })?.openingDate ?? ""
+            return shows.sorted { lhs, rhs in
+                let d0 = catalog.first(where: { $0.id == lhs.showId })?.openingDate ?? ""
+                let d1 = catalog.first(where: { $0.id == rhs.showId })?.openingDate ?? ""
                 return d0 < d1
             }
         case .recentlyViewed:
