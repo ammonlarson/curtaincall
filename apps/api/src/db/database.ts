@@ -8,11 +8,11 @@ let dbInstance: Kysely<Database> | null = null;
 let dbPassword: string | null = null;
 
 async function resolvePassword(): Promise<string> {
-  if (dbPassword) return dbPassword;
+  if (dbPassword !== null) return dbPassword;
 
-  // Check for direct env var first (local dev)
-  if (process.env['DB_PASSWORD']) {
-    dbPassword = process.env['DB_PASSWORD'];
+  // Check for direct env var first (local dev) - empty string is valid
+  if ('DB_PASSWORD' in process.env) {
+    dbPassword = process.env['DB_PASSWORD'] ?? '';
     return dbPassword;
   }
 
@@ -33,7 +33,9 @@ async function resolvePassword(): Promise<string> {
     }
   }
 
-  throw new Error('No database password configured. Set DB_PASSWORD or DB_SECRET_ARN.');
+  // Default to empty password for local development
+  dbPassword = '';
+  return dbPassword;
 }
 
 export async function getDb(): Promise<Kysely<Database>> {
@@ -45,7 +47,7 @@ export async function getDb(): Promise<Kysely<Database>> {
     host: process.env['DB_HOST'] ?? 'localhost',
     port: parseInt(process.env['DB_PORT'] ?? '5432', 10),
     database: process.env['DB_NAME'] ?? 'curtaincall',
-    user: process.env['DB_USER'] ?? 'curtaincall',
+    user: process.env['DB_USER'] ?? 'postgres',
     password,
     max: 10,
     ssl: process.env['DB_SSL'] === 'true'
