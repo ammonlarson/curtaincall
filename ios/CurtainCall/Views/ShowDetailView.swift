@@ -51,7 +51,7 @@ struct ShowDetailView: View {
 
     private var headerImage: some View {
         ZStack(alignment: .bottomLeading) {
-            if let urlString = show.imageURL, let url = URL(string: urlString) {
+            if let urlString = show.imageUrl, let url = URL(string: urlString) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let image):
@@ -103,7 +103,7 @@ struct ShowDetailView: View {
                     .foregroundStyle(.secondary)
 
                 HStack(spacing: 8) {
-                    Text(show.category.rawValue)
+                    Text(show.category.displayName)
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
@@ -334,7 +334,7 @@ struct ShowDetailView: View {
                 openingDate: "2015-08-06",
                 closingDate: nil,
                 theater: "Richard Rodgers Theatre",
-                imageURL: nil,
+                imageUrl: nil,
                 composer: "Lin-Manuel Miranda",
                 lyricist: "Lin-Manuel Miranda",
                 bookWriter: "Lin-Manuel Miranda",

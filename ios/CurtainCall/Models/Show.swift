@@ -7,7 +7,7 @@ struct Show: Identifiable, Codable, Equatable {
     let openingDate: String?
     let closingDate: String?
     let theater: String
-    let imageURL: String?
+    let imageUrl: String?
     let composer: String?
     let lyricist: String?
     let bookWriter: String?
@@ -18,10 +18,19 @@ struct Show: Identifiable, Codable, Equatable {
     let category: ShowCategory
 
     enum ShowCategory: String, Codable, CaseIterable {
-        case musical = "Musical"
-        case play = "Play"
-        case revival = "Revival"
-        case special = "Special Event"
+        case musical = "musical"
+        case play = "play"
+        case revival = "revival"
+        case special = "special"
+
+        var displayName: String {
+            switch self {
+            case .musical: return "Musical"
+            case .play: return "Play"
+            case .revival: return "Revival"
+            case .special: return "Special Event"
+            }
+        }
     }
 }
 
