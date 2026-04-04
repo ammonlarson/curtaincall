@@ -465,7 +465,7 @@ async function seed() {
     user: process.env['DB_USER'] ?? 'postgres',
     password: process.env['DB_PASSWORD'] ?? '',
     ssl: process.env['DB_SSL'] === 'true'
-      ? { rejectUnauthorized: true }
+      ? { rejectUnauthorized: false }
       : undefined,
   });
 

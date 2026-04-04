@@ -51,7 +51,7 @@ export async function getDb(): Promise<Kysely<Database>> {
     password,
     max: 10,
     ssl: process.env['DB_SSL'] === 'true'
-      ? { rejectUnauthorized: true }
+      ? { rejectUnauthorized: false }
       : undefined,
   });
 

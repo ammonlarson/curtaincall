@@ -5,21 +5,28 @@ import { hashPassword } from '../auth/password.js';
 
 const { Pool } = pg;
 
-async function migrate() {
-  const pool = new Pool({
-    host: process.env['DB_HOST'] ?? 'localhost',
-    port: parseInt(process.env['DB_PORT'] ?? '5432', 10),
-    database: process.env['DB_NAME'] ?? 'curtaincall',
-    user: process.env['DB_USER'] ?? 'postgres',
-    password: process.env['DB_PASSWORD'] ?? '',
-    ssl: process.env['DB_SSL'] === 'true'
-      ? { rejectUnauthorized: true }
-      : undefined,
-  });
+export async function runMigrations(externalDb?: Kysely<Database>) {
+  let db: Kysely<Database>;
+  let shouldDestroy = false;
 
-  const db = new Kysely<Database>({
-    dialect: new PostgresDialect({ pool }),
-  });
+  if (externalDb) {
+    db = externalDb;
+  } else {
+    const pool = new Pool({
+      host: process.env['DB_HOST'] ?? 'localhost',
+      port: parseInt(process.env['DB_PORT'] ?? '5432', 10),
+      database: process.env['DB_NAME'] ?? 'curtaincall',
+      user: process.env['DB_USER'] ?? 'postgres',
+      password: process.env['DB_PASSWORD'] ?? '',
+      ssl: process.env['DB_SSL'] === 'true'
+        ? { rejectUnauthorized: false }
+        : undefined,
+    });
+    db = new Kysely<Database>({
+      dialect: new PostgresDialect({ pool }),
+    });
+    shouldDestroy = true;
+  }
 
   console.log('Running migrations...');
 
@@ -208,10 +215,16 @@ async function migrate() {
   }
 
   console.log('Migrations complete.');
-  await db.destroy();
+  if (shouldDestroy) {
+    await db.destroy();
+  }
 }
 
-migrate().catch((err) => {
-  console.error('Migration failed:', err);
-  process.exit(1);
-});
+// CLI entrypoint
+const isDirectRun = process.argv[1]?.endsWith('migrate.ts') || process.argv[1]?.endsWith('migrate.js');
+if (isDirectRun) {
+  runMigrations().catch((err) => {
+    console.error('Migration failed:', err);
+    process.exit(1);
+  });
+}

@@ -58,7 +58,15 @@ async function responseToLambda(response: Response): Promise<LambdaResponse> {
   };
 }
 
-export async function handler(event: LambdaFunctionUrlEvent): Promise<LambdaResponse> {
+export async function handler(event: LambdaFunctionUrlEvent & { action?: string }): Promise<LambdaResponse> {
+  // Handle non-HTTP invocations (EventBridge, CLI)
+  if (event.action === 'migrate') {
+    const { runMigrations } = await import('./db/migrate.js');
+    const db = await getDb();
+    await runMigrations(db);
+    return { statusCode: 200, headers: {}, body: JSON.stringify({ message: 'Migrations complete' }) };
+  }
+
   const db = await getDb();
   const publicRouter = createPublicRouter(db);
   const adminRouter = createAdminRouter(db);
