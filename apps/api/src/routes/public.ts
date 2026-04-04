@@ -24,14 +24,13 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     }
   });
 
-  // GET /public/categories - List available categories
-  router.get('public/categories', async () => {
+  // GET /v1/categories - List available categories
+  router.get('v1/categories', async () => {
     return Response.json({
       data: SHOW_CATEGORIES,
     });
   });
 
-  // Show route handlers shared by /public and /v1 prefixes
   const handleListShows: import('../router.js').RouteHandler = async (ctx) => {
     const page = Math.max(1, parseInt(ctx.query['page'] ?? '1', 10) || 1);
     const perPage = Math.min(
@@ -139,12 +138,6 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     return Response.json({ data: show });
   };
 
-  // Register show routes under /public prefix (existing)
-  router.get('public/shows', handleListShows);
-  router.get('public/shows/search', handleSearchShows);
-  router.get('public/shows/:id', handleGetShow);
-
-  // Register show routes under /v1 prefix (versioned)
   router.get('v1/shows', handleListShows);
   router.get('v1/shows/search', handleSearchShows);
   router.get('v1/shows/:id', handleGetShow);

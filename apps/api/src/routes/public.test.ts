@@ -43,55 +43,12 @@ describe('v1 show routes', () => {
     const response = await router.handle('GET', 'v1/unknown', makeContext());
     expect(response).toBeNull();
   });
-});
 
-describe('public and v1 routes coexist', () => {
-  it('should match both /public/shows and /v1/shows to the same handler', async () => {
-    const handler = async () => Response.json({ data: [] });
+  it('should not match removed /public/shows routes', async () => {
     const router = new Router();
-    router.get('public/shows', handler);
-    router.get('v1/shows', handler);
+    router.get('v1/shows', async () => Response.json({ data: [] }));
 
-    const publicResponse = await router.handle('GET', 'public/shows', makeContext());
-    const v1Response = await router.handle('GET', 'v1/shows', makeContext());
-
-    expect(publicResponse).not.toBeNull();
-    expect(v1Response).not.toBeNull();
-
-    const publicBody = await publicResponse!.json();
-    const v1Body = await v1Response!.json();
-    expect(publicBody).toEqual(v1Body);
-  });
-
-  it('should match both /public/shows/:id and /v1/shows/:id', async () => {
-    const handler = async (ctx: { params: Record<string, string> }) =>
-      Response.json({ id: ctx.params['id'] });
-    const router = new Router();
-    router.get('public/shows/:id', handler);
-    router.get('v1/shows/:id', handler);
-
-    const publicResponse = await router.handle('GET', 'public/shows/test-id', makeContext());
-    const v1Response = await router.handle('GET', 'v1/shows/test-id', makeContext());
-
-    expect(publicResponse).not.toBeNull();
-    expect(v1Response).not.toBeNull();
-
-    const publicBody = await publicResponse!.json();
-    const v1Body = await v1Response!.json();
-    expect(publicBody.id).toBe('test-id');
-    expect(v1Body.id).toBe('test-id');
-  });
-
-  it('should match both /public/shows/search and /v1/shows/search', async () => {
-    const handler = async () => Response.json({ data: [] });
-    const router = new Router();
-    router.get('public/shows/search', handler);
-    router.get('v1/shows/search', handler);
-
-    const publicResponse = await router.handle('GET', 'public/shows/search', makeContext({ q: 'ham' }));
-    const v1Response = await router.handle('GET', 'v1/shows/search', makeContext({ q: 'ham' }));
-
-    expect(publicResponse).not.toBeNull();
-    expect(v1Response).not.toBeNull();
+    const response = await router.handle('GET', 'public/shows', makeContext());
+    expect(response).toBeNull();
   });
 });
