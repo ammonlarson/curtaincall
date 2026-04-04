@@ -28,7 +28,7 @@ enum APIError: LocalizedError {
 final class APIService: ObservableObject {
     static let shared = APIService()
 
-    private let baseURL = "https://api.curtaincall.app"
+    private let baseURL = "http://localhost:3001"
     private let session: URLSession
     private let decoder: JSONDecoder
 
