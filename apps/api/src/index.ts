@@ -251,12 +251,10 @@ async function startNodeDevServer() {
       }
     });
 
-    res.writeHead(response.status, responseHeaders);
     if (cookies.length > 0) {
-      for (const cookie of cookies) {
-        res.setHeader('Set-Cookie', cookie);
-      }
+      responseHeaders['Set-Cookie'] = cookies.join(', ');
     }
+    res.writeHead(response.status, responseHeaders);
     res.end(await response.text());
   });
 
