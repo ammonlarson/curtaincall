@@ -1,7 +1,7 @@
 import type { Kysely } from 'kysely';
 import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, SHOW_CATEGORIES } from '@curtaincall/shared';
 import type { Database } from '../db/types.js';
-import { Router } from '../router.js';
+import { Router, type RouteHandler } from '../router.js';
 
 export function createPublicRouter(db: Kysely<Database>): Router {
   const router = new Router();
@@ -31,7 +31,7 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     });
   });
 
-  const handleListShows: import('../router.js').RouteHandler = async (ctx) => {
+  const handleListShows: RouteHandler = async (ctx) => {
     const page = Math.max(1, parseInt(ctx.query['page'] ?? '1', 10) || 1);
     const perPage = Math.min(
       MAX_PAGE_SIZE,
@@ -101,7 +101,7 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     });
   };
 
-  const handleSearchShows: import('../router.js').RouteHandler = async (ctx) => {
+  const handleSearchShows: RouteHandler = async (ctx) => {
     const q = ctx.query['q']?.trim();
 
     if (!q || q.length === 0) {
@@ -119,7 +119,7 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     return Response.json({ data: shows });
   };
 
-  const handleGetShow: import('../router.js').RouteHandler = async (ctx) => {
+  const handleGetShow: RouteHandler = async (ctx) => {
     const { id } = ctx.params;
 
     const show = await db
@@ -138,6 +138,8 @@ export function createPublicRouter(db: Kysely<Database>): Router {
     return Response.json({ data: show });
   };
 
+  // NOTE: /search must be registered before /:id — the router matches
+  // in registration order and :id would consume "search" as a parameter.
   router.get('v1/shows', handleListShows);
   router.get('v1/shows/search', handleSearchShows);
   router.get('v1/shows/:id', handleGetShow);
