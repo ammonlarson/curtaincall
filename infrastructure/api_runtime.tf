@@ -53,8 +53,8 @@ resource "aws_lambda_function_url" "api" {
   cors {
     allow_origins     = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "http://localhost:3000"]
     allow_methods     = ["*"]
-    allow_headers     = ["Content-Type", "Authorization", "Cookie"]
-    expose_headers    = ["Set-Cookie"]
+    allow_headers     = ["content-type", "authorization", "cookie"]
+    expose_headers    = ["set-cookie"]
     allow_credentials = true
     max_age           = 3600
   }
