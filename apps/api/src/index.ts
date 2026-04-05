@@ -67,6 +67,13 @@ export async function handler(event: LambdaFunctionUrlEvent & { action?: string 
     return { statusCode: 200, headers: {}, body: JSON.stringify({ message: 'Migrations complete' }) };
   }
 
+  if (event.action === 'seed') {
+    const { runSeed } = await import('./db/seed.js');
+    const db = await getDb();
+    await runSeed(db);
+    return { statusCode: 200, headers: {}, body: JSON.stringify({ message: 'Seed complete' }) };
+  }
+
   const db = await getDb();
   const publicRouter = createPublicRouter(db);
   const adminRouter = createAdminRouter(db);

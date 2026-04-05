@@ -1,3 +1,26 @@
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  backend "s3" {
+    bucket         = "curtaincall-terraform-state"
+    key            = "staging/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "curtaincall-terraform-locks"
+    encrypt        = true
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
 module "curtaincall" {
   source = "../../"
 
@@ -9,6 +32,7 @@ module "curtaincall" {
   seed_admin_email    = var.seed_admin_email
   seed_admin_password = var.seed_admin_password
   domain_name         = var.domain_name
+  github_access_token = var.github_access_token
 }
 
 variable "aws_region" {
@@ -44,6 +68,11 @@ variable "seed_admin_password" {
 variable "domain_name" {
   type    = string
   default = "staging.curtaincall.app"
+}
+
+variable "github_access_token" {
+  type      = string
+  sensitive = true
 }
 
 output "api_url" {

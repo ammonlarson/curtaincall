@@ -60,6 +60,25 @@ resource "aws_lambda_function_url" "api" {
   }
 }
 
+# Allow public access to the Function URL
+# Requires both InvokeFunctionUrl and InvokeFunction permissions.
+# Accounts created after ~2024 have "Block public access for Lambda Function URLs"
+# enabled by default, which blocks InvokeFunctionUrl alone.
+resource "aws_lambda_permission" "function_url" {
+  statement_id           = "FunctionURLAllowPublicAccess"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.api.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+resource "aws_lambda_permission" "function_url_invoke" {
+  statement_id  = "FunctionURLAllowPublicInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "*"
+}
+
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "api" {
   name              = "/aws/lambda/${aws_lambda_function.api.function_name}"

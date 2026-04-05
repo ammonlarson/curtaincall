@@ -457,21 +457,28 @@ const BROADWAY_SHOWS = [
   },
 ] as const;
 
-async function seed() {
-  const pool = new Pool({
-    host: process.env['DB_HOST'] ?? 'localhost',
-    port: parseInt(process.env['DB_PORT'] ?? '5432', 10),
-    database: process.env['DB_NAME'] ?? 'curtaincall',
-    user: process.env['DB_USER'] ?? 'postgres',
-    password: process.env['DB_PASSWORD'] ?? '',
-    ssl: process.env['DB_SSL'] === 'true'
-      ? { rejectUnauthorized: false }
-      : undefined,
-  });
+export async function runSeed(externalDb?: Kysely<Database>) {
+  const ownDb = !externalDb;
+  let db: Kysely<Database>;
 
-  const db = new Kysely<Database>({
-    dialect: new PostgresDialect({ pool }),
-  });
+  if (externalDb) {
+    db = externalDb;
+  } else {
+    const pool = new Pool({
+      host: process.env['DB_HOST'] ?? 'localhost',
+      port: parseInt(process.env['DB_PORT'] ?? '5432', 10),
+      database: process.env['DB_NAME'] ?? 'curtaincall',
+      user: process.env['DB_USER'] ?? 'postgres',
+      password: process.env['DB_PASSWORD'] ?? '',
+      ssl: process.env['DB_SSL'] === 'true'
+        ? { rejectUnauthorized: false }
+        : undefined,
+    });
+
+    db = new Kysely<Database>({
+      dialect: new PostgresDialect({ pool }),
+    });
+  }
 
   console.log('Seeding shows...');
 
@@ -509,10 +516,14 @@ async function seed() {
   }
 
   console.log(`Seeded ${BROADWAY_SHOWS.length} shows.`);
-  await db.destroy();
+  if (ownDb) await db.destroy();
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+// Run directly when invoked as a script
+const isDirectRun = import.meta.url === `file://${process.argv[1]}`;
+if (isDirectRun) {
+  runSeed().catch((err) => {
+    console.error('Seed failed:', err);
+    process.exit(1);
+  });
+}
