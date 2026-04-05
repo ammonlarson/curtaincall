@@ -55,6 +55,13 @@ variable "domain_name" {
   default     = "curtaincall.app"
 }
 
+variable "github_access_token" {
+  description = "GitHub personal access token for Amplify"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 variable "images_bucket_name" {
   description = "S3 bucket name for show images"
   type        = string

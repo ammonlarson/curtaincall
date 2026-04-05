@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --format=esm --external:pg-native",
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --format=cjs --external:pg-native",
     "start": "node dist/index.js",
-    "migrate": "tsx src/db/migrate.ts",
-    "seed": "tsx src/db/seed.ts",
+    "migrate": "tsx --env-file=.env src/db/migrate.ts",
+    "seed": "tsx --env-file=.env src/db/seed.ts",
     "test": "vitest run"
   },
   "dependencies": {

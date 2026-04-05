@@ -1,7 +1,8 @@
 # Amplify app for admin web frontend
 resource "aws_amplify_app" "admin" {
-  name       = "${local.prefix}-admin"
-  repository = "https://github.com/ammonlarson/curtaincall"
+  name         = "${local.prefix}-admin"
+  repository   = "https://github.com/ammonlarson/curtaincall"
+  access_token = var.github_access_token
 
   build_spec = <<-EOT
     version: 1

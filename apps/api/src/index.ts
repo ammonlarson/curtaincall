@@ -58,7 +58,22 @@ async function responseToLambda(response: Response): Promise<LambdaResponse> {
   };
 }
 
-export async function handler(event: LambdaFunctionUrlEvent): Promise<LambdaResponse> {
+export async function handler(event: LambdaFunctionUrlEvent & { action?: string }): Promise<LambdaResponse> {
+  // Handle non-HTTP invocations (EventBridge, CLI)
+  if (event.action === 'migrate') {
+    const { runMigrations } = await import('./db/migrate.js');
+    const db = await getDb();
+    await runMigrations(db);
+    return { statusCode: 200, headers: {}, body: JSON.stringify({ message: 'Migrations complete' }) };
+  }
+
+  if (event.action === 'seed') {
+    const { runSeed } = await import('./db/seed.js');
+    const db = await getDb();
+    await runSeed(db);
+    return { statusCode: 200, headers: {}, body: JSON.stringify({ message: 'Seed complete' }) };
+  }
+
   const db = await getDb();
   const publicRouter = createPublicRouter(db);
   const adminRouter = createAdminRouter(db);
@@ -251,12 +266,10 @@ async function startNodeDevServer() {
       }
     });
 
-    res.writeHead(response.status, responseHeaders);
     if (cookies.length > 0) {
-      for (const cookie of cookies) {
-        res.setHeader('Set-Cookie', cookie);
-      }
+      responseHeaders['Set-Cookie'] = cookies.join(', ');
     }
+    res.writeHead(response.status, responseHeaders);
     res.end(await response.text());
   });
 

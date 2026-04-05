@@ -1,6 +1,6 @@
 # RDS PostgreSQL instance
 resource "aws_db_subnet_group" "main" {
-  name       = "${local.prefix}-db-subnet"
+  name = "${local.prefix}-db-subnet"
   subnet_ids = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 
   tags = {
@@ -66,6 +66,7 @@ resource "aws_db_instance" "main" {
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
   parameter_group_name   = aws_db_parameter_group.main.name
+  publicly_accessible    = false
 
   multi_az            = var.environment == "prod"
   skip_final_snapshot = var.environment != "prod"

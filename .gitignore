@@ -54,3 +54,4 @@ coverage/
 # Agents
 CLAUDE.local.md
 settings.local.json
+.agent
