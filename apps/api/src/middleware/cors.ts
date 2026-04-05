@@ -6,6 +6,15 @@ const ALLOWED_ORIGINS = [
 /**
  * Get the allowed origin for a request, or null if not allowed.
  */
+function isAmplifyOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'https:' && url.hostname.endsWith('.amplifyapp.com');
+  } catch {
+    return false;
+  }
+}
+
 function getAllowedOrigin(requestOrigin: string | undefined): string | null {
   if (!requestOrigin) return null;
 
@@ -13,6 +22,11 @@ function getAllowedOrigin(requestOrigin: string | undefined): string | null {
   const configuredOrigin = process.env['CORS_ORIGIN'];
   if (configuredOrigin && requestOrigin === configuredOrigin) {
     return configuredOrigin;
+  }
+
+  // Allow Amplify preview/staging domains
+  if (isAmplifyOrigin(requestOrigin)) {
+    return requestOrigin;
   }
 
   // In development, allow localhost origins

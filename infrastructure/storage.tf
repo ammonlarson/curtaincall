@@ -57,7 +57,7 @@ resource "aws_s3_bucket_cors_configuration" "images" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST"]
-    allowed_origins = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "https://main.${aws_amplify_app.admin.default_domain}", "http://localhost:3000"]
+    allowed_origins = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "https://*.amplifyapp.com", "http://localhost:3000"]
     max_age_seconds = 3600
   }
 }
