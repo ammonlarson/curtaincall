@@ -3,6 +3,7 @@
 import { useState, useRef, type ChangeEvent } from 'react';
 import type { CreateShowInput, ShowCategory } from '@curtaincall/shared';
 import { SHOW_CATEGORIES, MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH } from '@curtaincall/shared';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface AdminBulkImportProps {
@@ -152,7 +153,7 @@ export default function AdminBulkImport({ onImportComplete }: AdminBulkImportPro
     setImporting(true);
 
     try {
-      const res = await fetch('/admin/shows/bulk', {
+      const res = await fetch(apiUrl('/admin/shows/bulk'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

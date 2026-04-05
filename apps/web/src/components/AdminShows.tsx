@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Show } from '@curtaincall/shared';
 import { useTableControls } from '@/hooks/useTableControls';
 import AdminEditShow from './AdminEditShow';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -26,7 +27,7 @@ export default function AdminShows() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/admin/shows?per_page=500', { credentials: 'include' });
+      const res = await fetch(apiUrl('/admin/shows?per_page=500'), { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch shows');
       const data = await res.json();
       setShows(Array.isArray(data) ? data : data.data || []);
@@ -58,7 +59,7 @@ export default function AdminShows() {
 
   async function handleDelete(id: string) {
     try {
-      const res = await fetch(`/admin/shows/${id}`, {
+      const res = await fetch(apiUrl(`/admin/shows/${id}`), {
         method: 'DELETE',
         credentials: 'include',
       });

@@ -29,6 +29,7 @@ resource "aws_lambda_function" "api" {
       ENVIRONMENT     = var.environment
       IMAGES_BUCKET   = aws_s3_bucket.images.bucket
       IMAGES_BASE_URL = "https://${aws_s3_bucket.images.bucket_regional_domain_name}/public"
+      CORS_ORIGIN     = "https://main.${aws_amplify_app.admin.default_domain}"
     }
   }
 
@@ -51,7 +52,7 @@ resource "aws_lambda_function_url" "api" {
   authorization_type = "NONE"
 
   cors {
-    allow_origins     = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "http://localhost:3000"]
+    allow_origins     = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "https://main.${aws_amplify_app.admin.default_domain}", "http://localhost:3000"]
     allow_methods     = ["*"]
     allow_headers     = ["content-type", "authorization", "cookie"]
     expose_headers    = ["set-cookie"]

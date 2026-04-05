@@ -10,6 +10,7 @@ import {
   MAX_PERSON_NAME_LENGTH,
 } from '@curtaincall/shared';
 import ImageUpload from './ImageUpload';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface AdminEditShowProps {
@@ -119,7 +120,7 @@ export default function AdminEditShow({ show, onSave, onCancel, onDelete }: Admi
     };
 
     try {
-      const res = await fetch(`/admin/shows/${show.id}`, {
+      const res = await fetch(apiUrl(`/admin/shows/${show.id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -142,7 +143,7 @@ export default function AdminEditShow({ show, onSave, onCancel, onDelete }: Admi
   async function handleDelete() {
     setDeleting(true);
     try {
-      const res = await fetch(`/admin/shows/${show.id}`, {
+      const res = await fetch(apiUrl(`/admin/shows/${show.id}`), {
         method: 'DELETE',
         credentials: 'include',
       });

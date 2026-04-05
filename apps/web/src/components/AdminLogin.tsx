@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import type { Admin } from '@curtaincall/shared';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface AdminLoginProps {
@@ -21,7 +22,7 @@ export default function AdminLogin({ onSuccess }: AdminLoginProps) {
     setLoading(true);
 
     try {
-      const res = await fetch('/admin/auth/login', {
+      const res = await fetch(apiUrl('/admin/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
