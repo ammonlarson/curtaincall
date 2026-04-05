@@ -20,18 +20,17 @@ resource "aws_amplify_app" "admin" {
                 - cd apps/web
                 - npm run build
           artifacts:
-            baseDirectory: .next
+            baseDirectory: out
             files:
               - '**/*'
           cache:
             paths:
               - node_modules/**/*
-              - .next/cache/**/*
   EOT
 
   environment_variables = {
-    API_URL     = aws_lambda_function_url.api.function_url
-    ENVIRONMENT = var.environment
+    NEXT_PUBLIC_API_URL = aws_lambda_function_url.api.function_url
+    ENVIRONMENT         = var.environment
   }
 
   custom_rule {
@@ -49,7 +48,7 @@ resource "aws_amplify_branch" "main" {
   app_id      = aws_amplify_app.admin.id
   branch_name = "main"
 
-  framework = "Next.js - SSR"
+  framework = "Next.js - SSG"
   stage     = var.environment == "prod" ? "PRODUCTION" : "DEVELOPMENT"
 
   environment_variables = {

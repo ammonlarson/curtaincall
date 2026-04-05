@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { AuditEvent } from '@curtaincall/shared';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 const ACTION_COLORS: Record<string, string> = {
@@ -101,7 +102,7 @@ export default function AdminAuditLog() {
       if (dateFrom) params.set('from', dateFrom);
       if (dateTo) params.set('to', dateTo);
 
-      const res = await fetch(`/admin/audit-events?${params}`, { credentials: 'include' });
+      const res = await fetch(apiUrl(`/admin/audit-events?${params}`), { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch audit events');
       const data = await res.json();
       if (Array.isArray(data)) {
