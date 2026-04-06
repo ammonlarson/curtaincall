@@ -37,3 +37,13 @@ output "lambda_function_name" {
   description = "Lambda function name"
   value       = aws_lambda_function.api.function_name
 }
+
+output "eic_endpoint_id" {
+  description = "EC2 Instance Connect Endpoint ID for database tunneling"
+  value       = aws_ec2_instance_connect_endpoint.main.id
+}
+
+output "bastion_instance_id" {
+  description = "Bastion EC2 instance ID for database tunneling"
+  value       = aws_instance.bastion.id
+}

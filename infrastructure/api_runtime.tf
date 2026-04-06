@@ -26,9 +26,11 @@ resource "aws_lambda_function" "api" {
       DB_USER         = aws_db_instance.main.username
       DB_SECRET_ARN   = aws_secretsmanager_secret.db_credentials.arn
       DB_SSL          = "true"
-      ENVIRONMENT     = var.environment
-      IMAGES_BUCKET   = aws_s3_bucket.images.bucket
-      IMAGES_BASE_URL = "https://${aws_s3_bucket.images.bucket_regional_domain_name}/public"
+      ENVIRONMENT        = var.environment
+      IMAGES_BUCKET      = aws_s3_bucket.images.bucket
+      IMAGES_BASE_URL    = "https://${aws_s3_bucket.images.bucket_regional_domain_name}/public"
+      SEED_ADMIN_EMAIL    = var.seed_admin_email
+      SEED_ADMIN_PASSWORD = var.seed_admin_password
     }
   }
 

@@ -157,7 +157,95 @@ resource "aws_security_group" "rds" {
     security_groups = [aws_security_group.lambda.id]
   }
 
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion.id]
+  }
+
   tags = {
     Name = "${local.prefix}-rds-sg"
+  }
+}
+
+# EC2 Instance Connect Endpoint for bastion access
+resource "aws_security_group" "eic" {
+  name_prefix = "${local.prefix}-eic-"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  tags = {
+    Name = "${local.prefix}-eic-sg"
+  }
+}
+
+resource "aws_ec2_instance_connect_endpoint" "main" {
+  subnet_id          = aws_subnet.private_a.id
+  security_group_ids = [aws_security_group.eic.id]
+  preserve_client_ip = false
+
+  tags = {
+    Name = "${local.prefix}-eic"
+  }
+}
+
+# Bastion host for database access
+resource "aws_security_group" "bastion" {
+  name_prefix = "${local.prefix}-bastion-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eic.id]
+  }
+
+  egress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  tags = {
+    Name = "${local.prefix}-bastion-sg"
+  }
+}
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-arm64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+resource "aws_instance" "bastion" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = "t4g.nano"
+  subnet_id              = aws_subnet.private_a.id
+  vpc_security_group_ids = [aws_security_group.bastion.id]
+
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  tags = {
+    Name = "${local.prefix}-bastion"
   }
 }

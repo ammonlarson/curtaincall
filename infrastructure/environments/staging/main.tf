@@ -32,7 +32,6 @@ module "curtaincall" {
   seed_admin_email    = var.seed_admin_email
   seed_admin_password = var.seed_admin_password
   domain_name         = var.domain_name
-  github_access_token = var.github_access_token
 }
 
 variable "aws_region" {
@@ -71,8 +70,10 @@ variable "domain_name" {
 }
 
 variable "github_access_token" {
-  type      = string
-  sensitive = true
+  description = "Deprecated — no longer needed. Kept to avoid tfvars errors."
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 output "api_url" {
@@ -81,4 +82,21 @@ output "api_url" {
 
 output "admin_url" {
   value = module.curtaincall.amplify_app_url
+}
+
+output "db_endpoint" {
+  value = module.curtaincall.db_endpoint
+}
+
+output "db_secret_arn" {
+  value     = module.curtaincall.db_secret_arn
+  sensitive = true
+}
+
+output "eic_endpoint_id" {
+  value = module.curtaincall.eic_endpoint_id
+}
+
+output "bastion_instance_id" {
+  value = module.curtaincall.bastion_instance_id
 }

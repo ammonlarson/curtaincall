@@ -56,7 +56,7 @@ variable "domain_name" {
 }
 
 variable "github_access_token" {
-  description = "GitHub personal access token for Amplify"
+  description = "Deprecated — Amplify now uses CodeConnections. Kept for backward compatibility."
   type        = string
   sensitive   = true
   default     = ""
