@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import type { Admin } from '@curtaincall/shared';
 import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from '@curtaincall/shared';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface AdminAccountProps {
@@ -38,7 +39,7 @@ export default function AdminAccount({ admin }: AdminAccountProps) {
     setSubmitting(true);
 
     try {
-      const res = await fetch('/admin/auth/change-password', {
+      const res = await fetch(apiUrl('/admin/auth/change-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

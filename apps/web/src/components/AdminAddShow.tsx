@@ -10,6 +10,7 @@ import {
   MAX_PERSON_NAME_LENGTH,
 } from '@curtaincall/shared';
 import ImageUpload from './ImageUpload';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface AdminAddShowProps {
@@ -118,7 +119,7 @@ export default function AdminAddShow({ onShowCreated }: AdminAddShowProps) {
     if (form.choreographer.trim()) body.choreographer = form.choreographer.trim();
 
     try {
-      const res = await fetch('/admin/shows', {
+      const res = await fetch(apiUrl('/admin/shows'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

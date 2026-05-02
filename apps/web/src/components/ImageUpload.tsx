@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, type DragEvent, type ChangeEvent } from 'react';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 interface ImageUploadProps {
@@ -30,7 +31,7 @@ export default function ImageUpload({ currentUrl, onUpload }: ImageUploadProps) 
 
     try {
       // Get presigned URL
-      const presignRes = await fetch('/admin/shows/upload-url', {
+      const presignRes = await fetch(apiUrl('/admin/shows/upload-url'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

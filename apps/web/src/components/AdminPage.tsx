@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { Admin } from '@curtaincall/shared';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
+import { apiUrl } from '@/api';
 import { theme } from '@/styles/theme';
 
 export default function AdminPage() {
@@ -16,7 +17,7 @@ export default function AdminPage() {
 
   async function checkAuth() {
     try {
-      const res = await fetch('/admin/auth/me', { credentials: 'include' });
+      const res = await fetch(apiUrl('/admin/auth/me'), { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setAdmin(data);
@@ -36,7 +37,7 @@ export default function AdminPage() {
 
   async function handleLogout() {
     try {
-      await fetch('/admin/auth/logout', {
+      await fetch(apiUrl('/admin/auth/logout'), {
         method: 'POST',
         credentials: 'include',
       });
