@@ -252,6 +252,15 @@ resource "aws_instance" "bastion" {
     http_tokens = "required"
   }
 
+  # Pin the bastion to its launch-time AMI. The data source above still
+  # surfaces the latest AL2023 ARM64 AMI in plan output, but Amazon's
+  # release cadence shouldn't force-replace a long-lived bastion and kill
+  # active EC2 Instance Connect sessions. Bump explicitly with
+  # `terraform apply -replace=aws_instance.bastion` when patching is due.
+  lifecycle {
+    ignore_changes = [ami]
+  }
+
   tags = {
     Name = "${local.prefix}-bastion"
   }
