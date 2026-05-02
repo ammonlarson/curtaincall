@@ -32,6 +32,7 @@ module "curtaincall" {
   seed_admin_email    = var.seed_admin_email
   seed_admin_password = var.seed_admin_password
   domain_name         = var.domain_name
+  extra_cors_origins  = var.extra_cors_origins
 }
 
 variable "aws_region" {
@@ -67,6 +68,11 @@ variable "seed_admin_password" {
 variable "domain_name" {
   type    = string
   default = "staging.curtaincall.app"
+}
+
+variable "extra_cors_origins" {
+  type    = list(string)
+  default = []
 }
 
 variable "github_access_token" {

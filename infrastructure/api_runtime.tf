@@ -53,7 +53,14 @@ resource "aws_lambda_function_url" "api" {
   authorization_type = "NONE"
 
   cors {
-    allow_origins     = ["https://${var.domain_name}", "https://admin.${var.domain_name}", "http://localhost:3000"]
+    allow_origins = concat(
+      [
+        "https://${var.domain_name}",
+        "https://admin.${var.domain_name}",
+        "http://localhost:3000",
+      ],
+      var.extra_cors_origins,
+    )
     allow_methods     = ["*"]
     allow_headers     = ["content-type", "authorization", "cookie"]
     expose_headers    = ["set-cookie"]
