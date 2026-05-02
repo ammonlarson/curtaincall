@@ -105,3 +105,5 @@ Migrations are raw SQL executed via Kysely in `apps/api/src/db/migrate.ts`. The 
 The API runs as an AWS Lambda Function URL. Infrastructure is managed with Terraform in `infrastructure/`. Environments: `staging` and `prod`.
 
 Key AWS services: Lambda (API), RDS PostgreSQL, S3 (show images), Amplify (web hosting), Secrets Manager (DB password).
+
+The Lambda Function URL has its own CORS layer that only accepts complete origins (subdomain wildcards like `https://*.example.com` are rejected by AWS). To allow the Amplify-generated admin URL or any other host, add it to `extra_cors_origins` in the env's `terraform.tfvars` — see the example tfvars file for the expected format.

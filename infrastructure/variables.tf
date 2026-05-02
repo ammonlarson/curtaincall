@@ -67,3 +67,21 @@ variable "images_bucket_name" {
   type        = string
   default     = ""
 }
+
+# Lambda Function URL CORS only accepts complete origins (e.g.,
+# https://www.example.com), the literal "*", or "https://*". Subdomain
+# wildcards like https://*.example.com are rejected by the AWS API, so we
+# validate against them here to fail fast at plan time instead of apply.
+variable "extra_cors_origins" {
+  description = "Additional origins to allow on the API Lambda Function URL. Each entry must be a complete origin (e.g., https://main.<app-id>.amplifyapp.com); subdomain wildcards are not supported by Lambda Function URL CORS."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for origin in var.extra_cors_origins :
+      !can(regex("^https?://\\*\\.", origin))
+    ])
+    error_message = "Lambda Function URL CORS does not accept subdomain wildcards (https://*.example.com). Use a complete origin or the full wildcard \"*\"."
+  }
+}

@@ -6,3 +6,10 @@ lambda_timeout      = 60
 seed_admin_email    = "admin@curtaincall.app"
 seed_admin_password = "CHANGE_ME_IN_SECRETS_MANAGER"
 domain_name         = "curtaincall.app"
+
+# Additional origins to allow on the API Lambda Function URL. Each entry must
+# be a complete origin; subdomain wildcards (https://*.example.com) are not
+# supported by Lambda Function URL CORS. Use this to add the Amplify-generated
+# admin URL, e.g.:
+# extra_cors_origins = ["https://main.<amplify-app-id>.amplifyapp.com"]
+extra_cors_origins = []
