@@ -30,7 +30,7 @@ resource "aws_subnet" "private_b" {
   }
 }
 
-# Public subnet for NAT Gateway
+# Public subnets (kept for IGW reachability and future use)
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.10.0/24"
@@ -62,26 +62,6 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# NAT Gateway for Lambda outbound access
-resource "aws_eip" "nat" {
-  domain = "vpc"
-
-  tags = {
-    Name = "${local.prefix}-nat-eip"
-  }
-}
-
-resource "aws_nat_gateway" "main" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public_a.id
-
-  tags = {
-    Name = "${local.prefix}-nat"
-  }
-
-  depends_on = [aws_internet_gateway.main]
-}
-
 # Route tables
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
@@ -98,11 +78,6 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main.id
-  }
 
   tags = {
     Name = "${local.prefix}-private-rt"
@@ -166,6 +141,38 @@ resource "aws_security_group" "rds" {
 
   tags = {
     Name = "${local.prefix}-rds-sg"
+  }
+}
+
+# Interface VPC endpoint for Secrets Manager.
+# Required so the in-VPC Lambda can resolve DB credentials without a NAT
+# Gateway. Replaces the prior internet egress path at ~$7/mo vs. ~$36/mo.
+resource "aws_security_group" "vpc_endpoints" {
+  name_prefix = "${local.prefix}-vpce-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lambda.id]
+  }
+
+  tags = {
+    Name = "${local.prefix}-vpce-sg"
+  }
+}
+
+resource "aws_vpc_endpoint" "secretsmanager" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.aws_region}.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name = "${local.prefix}-secretsmanager-vpce"
   }
 }
 
