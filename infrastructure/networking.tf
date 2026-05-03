@@ -259,11 +259,18 @@ resource "aws_instance" "bastion" {
   # `terraform apply -replace=aws_instance.bastion` (which still
   # destroys/recreates the bastion and kills any in-flight EC2 Instance
   # Connect sessions — `ignore_changes` only suppresses unplanned drift).
+  #
+  # The `LastAmiRefresh` tag (YYYY-MM) is the operator-visible reminder
+  # of when the bastion was last cycled onto a fresh AL2023 AMI. Bump it
+  # in code at the same time as the `-replace`, then apply. It's listed
+  # in `ignore_changes` so that Terraform doesn't fight an out-of-band
+  # update if somebody edits it directly on the instance.
   lifecycle {
-    ignore_changes = [ami]
+    ignore_changes = [ami, tags["LastAmiRefresh"]]
   }
 
   tags = {
-    Name = "${local.prefix}-bastion"
+    Name           = "${local.prefix}-bastion"
+    LastAmiRefresh = "2026-05"
   }
 }
