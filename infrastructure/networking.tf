@@ -252,6 +252,17 @@ resource "aws_instance" "bastion" {
     http_tokens = "required"
   }
 
+  # Pin the bastion to its launch-time AMI so Amazon's AL2023 ARM64
+  # release cadence doesn't trigger unplanned replacements on every
+  # plan/apply. The data source above stays so the latest AMI is still
+  # visible in plan output. Operators bump the AMI explicitly via
+  # `terraform apply -replace=aws_instance.bastion` (which still
+  # destroys/recreates the bastion and kills any in-flight EC2 Instance
+  # Connect sessions — `ignore_changes` only suppresses unplanned drift).
+  lifecycle {
+    ignore_changes = [ami]
+  }
+
   tags = {
     Name = "${local.prefix}-bastion"
   }
