@@ -112,7 +112,7 @@ The Lambda Function URL has its own CORS layer that only accepts complete origin
 
 The bastion (`aws_instance.bastion` in `infrastructure/networking.tf`) is pinned to its launch-time AL2023 ARM64 AMI via `lifecycle.ignore_changes = [ami, ...]`, so routine `terraform plan` runs don't propose replacing it every time Amazon publishes a new AMI.
 
-Because pinning hides patch drift, the bastion carries a `LastAmiRefresh = "YYYY-MM"` tag that records when it was last cycled. To refresh:
+Because pinning hides patch drift, the bastion carries a `LastAmiRefresh = "YYYY-MM"` tag that records when it was last cycled. The tag is also in `ignore_changes`, so its value is only realized on the AWS resource at create time — i.e., when the bastion is replaced. A bare `terraform apply` will not propagate a new tag value to a running bastion. To refresh:
 
 1. Edit `infrastructure/networking.tf` and bump the `LastAmiRefresh` tag value to the current `YYYY-MM`.
 2. Apply with an explicit replace:
@@ -121,7 +121,9 @@ Because pinning hides patch drift, the bastion carries a `LastAmiRefresh = "YYYY
    terraform apply -replace=aws_instance.bastion
    ```
 
-   This destroys and recreates the bastion on the latest AMI returned by the `aws_ami.amazon_linux` data source. Any in-flight EC2 Instance Connect sessions will be terminated.
+   This destroys and recreates the bastion on the latest AMI returned by the `aws_ami.amazon_linux` data source, applying the new tag value. Any in-flight EC2 Instance Connect sessions will be terminated.
 3. Commit the tag bump.
 
 Target cadence: refresh at least every 90 days, or sooner if AL2023 ships a CVE that affects the bastion.
+
+The current code value (`2026-05`) reflects when this tracking convention was adopted, not when the bastion was last cycled. The first `-replace` apply after this change should set it to the actual refresh month.
