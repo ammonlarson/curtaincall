@@ -107,3 +107,21 @@ The API runs as an AWS Lambda Function URL. Infrastructure is managed with Terra
 Key AWS services: Lambda (API), RDS PostgreSQL, S3 (show images), Amplify (web hosting), Secrets Manager (DB password).
 
 The Lambda Function URL has its own CORS layer that only accepts complete origins (subdomain wildcards like `https://*.example.com` are rejected by AWS). To allow the Amplify-generated admin URL or any other host, add it to `extra_cors_origins` in the env's `terraform.tfvars` — see the example tfvars file for the expected format.
+
+### Bastion AMI refresh
+
+The bastion (`aws_instance.bastion` in `infrastructure/networking.tf`) is pinned to its launch-time AL2023 ARM64 AMI via `lifecycle.ignore_changes = [ami, ...]`, so routine `terraform plan` runs don't propose replacing it every time Amazon publishes a new AMI.
+
+Because pinning hides patch drift, the bastion carries a `LastAmiRefresh = "YYYY-MM"` tag that records when it was last cycled. To refresh:
+
+1. Edit `infrastructure/networking.tf` and bump the `LastAmiRefresh` tag value to the current `YYYY-MM`.
+2. Apply with an explicit replace:
+
+   ```bash
+   terraform apply -replace=aws_instance.bastion
+   ```
+
+   This destroys and recreates the bastion on the latest AMI returned by the `aws_ami.amazon_linux` data source. Any in-flight EC2 Instance Connect sessions will be terminated.
+3. Commit the tag bump.
+
+Target cadence: refresh at least every 90 days, or sooner if AL2023 ships a CVE that affects the bastion.
